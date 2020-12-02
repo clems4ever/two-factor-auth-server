@@ -21,6 +21,7 @@ var validKeys = []string{
 	"totp.issuer",
 	"totp.period",
 	"totp.skew",
+	"totp.algorithm",
 
 	// Access Control Keys.
 	"access_control.rules",
@@ -159,7 +160,6 @@ var specificErrorKeys = map[string]string{
 }
 
 const argon2id = "argon2id"
-const sha512 = "sha512"
 
 const schemeLDAP = "ldap"
 const schemeLDAPS = "ldaps"

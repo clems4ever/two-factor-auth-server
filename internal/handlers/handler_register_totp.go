@@ -37,11 +37,18 @@ var SecondFactorTOTPIdentityStart = middlewares.IdentityVerificationStart(middle
 })
 
 func secondFactorTOTPIdentityFinish(ctx *middlewares.AutheliaCtx, username string) {
+	algorithm, err := AlgorithmStringToOTPAlgorithm(ctx.Configuration.TOTP.Algorithm)
+	if err != nil {
+		ctx.Error(fmt.Errorf("Unable to generate TOTP key: %s", err), unableToRegisterOneTimePasswordMessage)
+		return
+	}
+
 	key, err := totp.Generate(totp.GenerateOpts{
 		Issuer:      ctx.Configuration.TOTP.Issuer,
 		AccountName: username,
 		SecretSize:  32,
 		Period:      uint(ctx.Configuration.TOTP.Period),
+		Algorithm:   algorithm,
 	})
 
 	if err != nil {
@@ -49,7 +56,7 @@ func secondFactorTOTPIdentityFinish(ctx *middlewares.AutheliaCtx, username strin
 		return
 	}
 
-	err = ctx.Providers.StorageProvider.SaveTOTPSecret(username, key.Secret())
+	err = ctx.Providers.StorageProvider.SaveTOTPSecret(username, key.Secret(), "sha512")
 	if err != nil {
 		ctx.Error(fmt.Errorf("Unable to save TOTP secret in DB: %s", err), unableToRegisterOneTimePasswordMessage)
 		return
