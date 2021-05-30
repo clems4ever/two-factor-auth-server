@@ -21,7 +21,7 @@ var ValidateConfigCmd = &cobra.Command{
 		}
 
 		// TODO: Actually use the configuration to validate some providers like Notifier
-		_, errs := configuration.Read(configPath)
+		_, errs := configuration.Read(configPath, true)
 		if len(errs) != 0 {
 			str := "Errors"
 			if len(errs) == 1 {

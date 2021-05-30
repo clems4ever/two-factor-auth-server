@@ -17,7 +17,7 @@ import (
 )
 
 // Read a YAML configuration and create a Configuration object out of it.
-func Read(configPath string) (*schema.Configuration, []error) {
+func Read(configPath string, createIfNotFound bool) (*schema.Configuration, []error) {
 	logger := logging.Logger()
 
 	if configPath == "" {
@@ -28,17 +28,22 @@ func Read(configPath string) (*schema.Configuration, []error) {
 	if err != nil {
 		errs := []error{
 			fmt.Errorf("Unable to find config file: %v", configPath),
-			fmt.Errorf("Generating config file: %v", configPath),
 		}
 
-		err = generateConfigFromTemplate(configPath)
-		if err != nil {
-			errs = append(errs, err)
+		if createIfNotFound {
+			errs = append(errs, fmt.Errorf("Generating config file: %v", configPath))
+
+			err = generateConfigFromTemplate(configPath)
+			if err != nil {
+				errs = append(errs, err)
+			} else {
+				errs = append(errs, fmt.Errorf("Generated configuration at: %v", configPath))
+			}
+
+			return nil, errs
 		} else {
-			errs = append(errs, fmt.Errorf("Generated configuration at: %v", configPath))
+			return nil, errs
 		}
-
-		return nil, errs
 	}
 
 	file, err := ioutil.ReadFile(configPath)

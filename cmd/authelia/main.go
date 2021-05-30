@@ -27,7 +27,7 @@ var configPathFlag string
 //nolint:gocyclo // TODO: Consider refactoring/simplifying, time permitting.
 func startServer() {
 	logger := logging.Logger()
-	config, errs := configuration.Read(configPathFlag)
+	config, errs := configuration.Read(configPathFlag, true)
 
 	if len(errs) > 0 {
 		for _, err := range errs {
