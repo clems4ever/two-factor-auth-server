@@ -39,11 +39,9 @@ func Read(configPath string, createIfNotFound bool) (*schema.Configuration, []er
 			} else {
 				errs = append(errs, fmt.Errorf("Generated configuration at: %v", configPath))
 			}
-
-			return nil, errs
-		} else {
-			return nil, errs
 		}
+
+		return nil, errs
 	}
 
 	file, err := ioutil.ReadFile(configPath)
