@@ -11,6 +11,8 @@ import (
 	"github.com/authelia/authelia/internal/authorization"
 	"github.com/authelia/authelia/internal/commands"
 	"github.com/authelia/authelia/internal/configuration"
+	"github.com/authelia/authelia/internal/configuration/schema"
+	"github.com/authelia/authelia/internal/kubernetes"
 	"github.com/authelia/authelia/internal/logging"
 	"github.com/authelia/authelia/internal/middlewares"
 	"github.com/authelia/authelia/internal/notification"
@@ -122,6 +124,22 @@ func startServer() {
 
 	if err != nil {
 		logger.Fatalf("Error initializing OpenID Connect Provider: %+v", err)
+	}
+
+	if config.Kubernetes.IsEnabled() {
+		logger.Debug("Creating Kubernetes provider")
+		provider, err := kubernetes.CreateProvider(config)
+		provider.AccessControlRuleFunc = func(config *schema.AccessControlConfiguration) {
+			// TODO: Add back old rules
+			logger.Debug(config)
+			authorizer.SetAccessControlRules(*config)
+		}
+
+		logger.Debug("Starting Kubernetes provider")
+		err = provider.Start()
+		if err != nil {
+			logger.Fatalf("Unable to start Kubernetes provider")
+		}
 	}
 
 	providers := middlewares.Providers{

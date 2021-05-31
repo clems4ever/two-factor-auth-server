@@ -29,9 +29,12 @@ require (
 	github.com/tebeka/selenium v0.9.9
 	github.com/tstranex/u2f v1.0.0
 	github.com/valyala/fasthttp v1.24.0
+	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	golang.org/x/text v0.3.6
 	gopkg.in/square/go-jose.v2 v2.5.1
 	gopkg.in/yaml.v2 v2.4.0
+	k8s.io/apimachinery v0.21.1 // indirect
+	k8s.io/client-go v0.21.1
 )
 
 replace github.com/mattn/go-sqlite3 v2.0.3+incompatible => github.com/mattn/go-sqlite3 v1.14.7

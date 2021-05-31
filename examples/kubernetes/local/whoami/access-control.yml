@@ -1,0 +1,12 @@
+---
+apiVersion: authelia.com/v1
+kind: AccessControlRule
+metadata:
+  name: only-allow-admins
+  namespace: default
+spec:
+  domains:
+    - whoami.example.org
+  policy: one_factor
+  subjects:
+    - [group:admins]
