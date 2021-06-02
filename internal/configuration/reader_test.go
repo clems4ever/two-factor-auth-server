@@ -61,7 +61,7 @@ func setupEnv(t *testing.T) string {
 }
 
 func TestShouldErrorNoConfigPath(t *testing.T) {
-	_, errors := Read("", true)
+	_, errors := Read("")
 
 	require.Len(t, errors, 1)
 
@@ -81,7 +81,7 @@ func TestShouldErrorSecretNotExist(t *testing.T) {
 	require.NoError(t, os.Setenv("AUTHELIA_STORAGE_MYSQL_PASSWORD_FILE", dir+"mysql"))
 	require.NoError(t, os.Setenv("AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE", dir+"postgres"))
 
-	_, errors := Read("./test_resources/config.yml", true)
+	_, errors := Read("./test_resources/config.yml")
 
 	require.Len(t, errors, 12)
 
@@ -111,39 +111,20 @@ func TestShouldErrorSecretNotExist(t *testing.T) {
 	assert.EqualError(t, errors[11], "the SQL username and password must be provided")
 }
 
-func TestShouldErrorPermissionsOnLocalFS(t *testing.T) {
-	if runtime.GOOS == windows {
-		t.Skip("skipping test due to being on windows")
-	}
-
-	resetEnv()
-
-	_ = os.Mkdir("/tmp/noperms/", 0000)
-	_, errors := Read("/tmp/noperms/configuration.yml", true)
-
-	require.Len(t, errors, 3)
-
-	require.EqualError(t, errors[0], "Unable to find config file: /tmp/noperms/configuration.yml")
-	require.EqualError(t, errors[1], "Generating config file: /tmp/noperms/configuration.yml")
-	require.EqualError(t, errors[2], "Unable to generate /tmp/noperms/configuration.yml: open /tmp/noperms/configuration.yml: permission denied")
-}
-
-func TestShouldErrorAndGenerateConfigFile(t *testing.T) {
-	_, errors := Read("./nonexistent.yml", true)
+func TestShouldErrorOnNotFound(t *testing.T) {
+	_, errors := Read("./nonexistent.yml")
 	_ = os.Remove("./nonexistent.yml")
 
-	require.Len(t, errors, 3)
+	require.Len(t, errors, 1)
 
 	require.EqualError(t, errors[0], "Unable to find config file: ./nonexistent.yml")
-	require.EqualError(t, errors[1], "Generating config file: ./nonexistent.yml")
-	require.EqualError(t, errors[2], "Generated configuration at: ./nonexistent.yml")
 }
 
 func TestShouldErrorPermissionsConfigFile(t *testing.T) {
 	resetEnv()
 
 	_ = ioutil.WriteFile("/tmp/authelia/permissions.yml", []byte{}, 0000) // nolint:gosec
-	_, errors := Read("/tmp/authelia/permissions.yml", true)
+	_, errors := Read("/tmp/authelia/permissions.yml")
 
 	if runtime.GOOS == windows {
 		require.Len(t, errors, 5)
@@ -160,7 +141,7 @@ func TestShouldErrorPermissionsConfigFile(t *testing.T) {
 }
 
 func TestShouldErrorParseBadConfigFile(t *testing.T) {
-	_, errors := Read("./test_resources/config_bad_quoting.yml", true)
+	_, errors := Read("./test_resources/config_bad_quoting.yml")
 
 	require.Len(t, errors, 1)
 
@@ -180,7 +161,7 @@ func TestShouldParseConfigFile(t *testing.T) {
 	require.NoError(t, os.Setenv("AUTHELIA_STORAGE_MYSQL_PASSWORD_FILE", dir+"mysql"))
 	require.NoError(t, os.Setenv("AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE", dir+"postgres"))
 
-	config, errors := Read("./test_resources/config.yml", true)
+	config, errors := Read("./test_resources/config.yml")
 
 	require.Len(t, errors, 0)
 
@@ -217,7 +198,7 @@ func TestShouldParseAltConfigFile(t *testing.T) {
 	require.NoError(t, os.Setenv("AUTHELIA_JWT_SECRET_FILE", dir+"jwt"))
 	require.NoError(t, os.Setenv("AUTHELIA_SESSION_SECRET_FILE", dir+"session"))
 
-	config, errors := Read("./test_resources/config_alt.yml", true)
+	config, errors := Read("./test_resources/config_alt.yml")
 	require.Len(t, errors, 0)
 
 	assert.Equal(t, 9091, config.Port)
@@ -245,7 +226,7 @@ func TestShouldNotParseConfigFileWithOldOrUnexpectedKeys(t *testing.T) {
 	require.NoError(t, os.Setenv("AUTHELIA_SESSION_REDIS_PASSWORD_FILE", dir+"redis"))
 	require.NoError(t, os.Setenv("AUTHELIA_STORAGE_MYSQL_PASSWORD_FILE", dir+"mysql"))
 
-	_, errors := Read("./test_resources/config_bad_keys.yml", true)
+	_, errors := Read("./test_resources/config_bad_keys.yml")
 	require.Len(t, errors, 2)
 
 	// Sort error slice to prevent shenanigans that somehow occur
@@ -259,7 +240,7 @@ func TestShouldNotParseConfigFileWithOldOrUnexpectedKeys(t *testing.T) {
 func TestShouldValidateConfigurationTemplate(t *testing.T) {
 	resetEnv()
 
-	_, errors := Read("../../config.template.yml", true)
+	_, errors := Read("../../config.template.yml")
 	assert.Len(t, errors, 0)
 }
 
@@ -275,7 +256,7 @@ func TestShouldOnlyAllowEnvOrConfig(t *testing.T) {
 	require.NoError(t, os.Setenv("AUTHELIA_SESSION_REDIS_PASSWORD_FILE", dir+"redis"))
 	require.NoError(t, os.Setenv("AUTHELIA_STORAGE_MYSQL_PASSWORD_FILE", dir+"mysql"))
 
-	_, errors := Read("./test_resources/config_with_secret.yml", true)
+	_, errors := Read("./test_resources/config_with_secret.yml")
 
 	require.Len(t, errors, 1)
 	require.EqualError(t, errors[0], "error loading secret (jwt_secret): it's already defined in the config file")

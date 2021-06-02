@@ -27,7 +27,14 @@ var configPathFlag string
 //nolint:gocyclo // TODO: Consider refactoring/simplifying, time permitting.
 func startServer() {
 	logger := logging.Logger()
-	config, errs := configuration.Read(configPathFlag, true)
+	created, err := configuration.GenerateIfNotFound(configPathFlag)
+	if err != nil {
+		logger.Error(err)
+	}
+	if created {
+		logger.Infof("Generated configuration at: %v", configPathFlag)
+	}
+	config, errs := configuration.Read(configPathFlag)
 
 	if len(errs) > 0 {
 		for _, err := range errs {

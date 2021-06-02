@@ -1,7 +1,6 @@
 package configuration
 
 import (
-	_ "embed" // Embed config.template.yml.
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -17,7 +16,7 @@ import (
 )
 
 // Read a YAML configuration and create a Configuration object out of it.
-func Read(configPath string, createIfNotFound bool) (*schema.Configuration, []error) {
+func Read(configPath string) (*schema.Configuration, []error) {
 	logger := logging.Logger()
 
 	if configPath == "" {
@@ -28,17 +27,6 @@ func Read(configPath string, createIfNotFound bool) (*schema.Configuration, []er
 	if err != nil {
 		errs := []error{
 			fmt.Errorf("Unable to find config file: %v", configPath),
-		}
-
-		if createIfNotFound {
-			errs = append(errs, fmt.Errorf("Generating config file: %v", configPath))
-
-			err = generateConfigFromTemplate(configPath)
-			if err != nil {
-				errs = append(errs, err)
-			} else {
-				errs = append(errs, fmt.Errorf("Generated configuration at: %v", configPath))
-			}
 		}
 
 		return nil, errs
@@ -87,16 +75,4 @@ func Read(configPath string, createIfNotFound bool) (*schema.Configuration, []er
 	}
 
 	return &configuration, nil
-}
-
-//go:embed config.template.yml
-var cfg []byte
-
-func generateConfigFromTemplate(configPath string) error {
-	err := ioutil.WriteFile(configPath, cfg, 0600)
-	if err != nil {
-		return fmt.Errorf("Unable to generate %v: %v", configPath, err)
-	}
-
-	return nil
 }

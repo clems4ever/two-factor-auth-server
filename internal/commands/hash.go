@@ -39,7 +39,7 @@ var HashPasswordCmd = &cobra.Command{
 
 		configPathFlag, _ := cobraCmd.Flags().GetString("config")
 		if configPathFlag != "" {
-			config, errs := configuration.Read(configPathFlag, false)
+			config, errs := configuration.Read(configPathFlag)
 			if len(errs) > 0 {
 				for _, err := range errs {
 					log.Print(err)
