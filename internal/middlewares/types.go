@@ -5,15 +5,14 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/valyala/fasthttp"
 
-	"github.com/authelia/authelia/internal/authentication"
 	"github.com/authelia/authelia/internal/authorization"
 	"github.com/authelia/authelia/internal/configuration/schema"
-	"github.com/authelia/authelia/internal/notification"
 	"github.com/authelia/authelia/internal/oidc"
 	"github.com/authelia/authelia/internal/regulation"
 	"github.com/authelia/authelia/internal/session"
 	"github.com/authelia/authelia/internal/storage"
 	"github.com/authelia/authelia/internal/utils"
+	"github.com/authelia/authelia/v4"
 )
 
 // AutheliaCtx contains all server variables related to Authelia.
@@ -34,9 +33,9 @@ type Providers struct {
 	Regulator       *regulation.Regulator
 	OpenIDConnect   oidc.OpenIDConnectProvider
 
-	UserProvider    authentication.UserProvider
-	StorageProvider storage.Provider
-	Notifier        notification.Notifier
+	UserProvider         authelia.UserProvider
+	StorageProvider      storage.Provider
+	NotificationProvider authelia.NotificationProvider
 }
 
 // RequestHandler represents an Authelia request handler.
