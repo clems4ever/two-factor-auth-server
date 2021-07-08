@@ -1,0 +1,57 @@
+---
+# Example markdownlint YAML configuration with all properties set to their default value
+
+# Default state for all rules
+default: true
+
+# MD003/heading-style/header-style - Heading style
+MD003:
+  # Heading style
+  style: "atx"
+
+# MD004/ul-style - Unordered list style
+MD004:
+  # List style
+  style: "dash"
+
+# MD007/ul-indent - Unordered list indentation
+MD007:
+  # Spaces for indent
+  indent: 4
+
+# MD013/line-length - Line length
+MD013:
+  # Number of characters
+  line_length: 120
+  # Number of characters for headings
+  heading_line_length: 120
+  # Number of characters for code blocks
+  code_block_line_length: 120
+  # Include code blocks
+  code_blocks: true
+  # Include tables
+  tables: false
+  # Include headings
+  headings: true
+  # Include headings
+  headers: true
+  # Strict length checking
+  strict: false
+  # Stern length checking
+  stern: false
+
+# MD030/list-marker-space - Spaces after list markers
+MD030:
+  # Spaces for multi-line unordered list items
+  ul_multi: 3
+  # Spaces for multi-line ordered list items
+  ol_multi: 2
+
+# MD033/no-inline-html - Inline HTML
+MD033: false
+
+# MD035/hr-style - Horizontal rule style
+MD035:
+  # Horizontal rule style
+  style: "---"
+...
