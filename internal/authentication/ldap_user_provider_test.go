@@ -120,7 +120,8 @@ func TestEscapeSpecialCharsInGroupsFilter(t *testing.T) {
 		Emails:      []string{"john.doe@authelia.com"},
 	}
 
-	filter, _ := ldapClient.resolveGroupsFilter("john", &profile)
+	filter, err := ldapClient.resolveGroupsFilter("john", &profile)
+	assert.NoError(t, err)
 	assert.Equal(t, "(|(member=cn=john \\28external\\29,dc=example,dc=com)(uid=john)(uid=john))", filter)
 
 	filter, _ = ldapClient.resolveGroupsFilter("john#=(abc,def)", &profile)
@@ -169,7 +170,7 @@ func TestShouldCheckLDAPServerExtensions(t *testing.T) {
 			UsersFilter:          "(|({username_attribute}={input})({mail_attribute}={input}))",
 			UsernameAttribute:    "uid",
 			MailAttribute:        "mail",
-			DisplayNameAttribute: "displayname",
+			DisplayNameAttribute: "displayName",
 			Password:             "password",
 			AdditionalUsersDN:    "ou=users",
 			BaseDN:               "dc=example,dc=com",
@@ -221,7 +222,7 @@ func TestShouldNotEnablePasswdModifyExtension(t *testing.T) {
 			UsersFilter:          "(|({username_attribute}={input})({mail_attribute}={input}))",
 			UsernameAttribute:    "uid",
 			MailAttribute:        "mail",
-			DisplayNameAttribute: "displayname",
+			DisplayNameAttribute: "displayName",
 			Password:             "password",
 			AdditionalUsersDN:    "ou=users",
 			BaseDN:               "dc=example,dc=com",
@@ -273,7 +274,7 @@ func TestShouldReturnCheckServerConnectError(t *testing.T) {
 			UsersFilter:          "(|({username_attribute}={input})({mail_attribute}={input}))",
 			UsernameAttribute:    "uid",
 			MailAttribute:        "mail",
-			DisplayNameAttribute: "displayname",
+			DisplayNameAttribute: "displayName",
 			Password:             "password",
 			AdditionalUsersDN:    "ou=users",
 			BaseDN:               "dc=example,dc=com",
@@ -305,7 +306,7 @@ func TestShouldReturnCheckServerSearchError(t *testing.T) {
 			UsersFilter:          "(|({username_attribute}={input})({mail_attribute}={input}))",
 			UsernameAttribute:    "uid",
 			MailAttribute:        "mail",
-			DisplayNameAttribute: "displayname",
+			DisplayNameAttribute: "displayName",
 			Password:             "password",
 			AdditionalUsersDN:    "ou=users",
 			BaseDN:               "dc=example,dc=com",
@@ -362,7 +363,7 @@ func TestShouldEscapeUserInput(t *testing.T) {
 			UsersFilter:          "(|({username_attribute}={input})({mail_attribute}={input}))",
 			UsernameAttribute:    "uid",
 			MailAttribute:        "mail",
-			DisplayNameAttribute: "displayname",
+			DisplayNameAttribute: "displayName",
 			Password:             "password",
 			AdditionalUsersDN:    "ou=users",
 			BaseDN:               "dc=example,dc=com",
@@ -397,7 +398,7 @@ func TestShouldCombineUsernameFilterAndUsersFilter(t *testing.T) {
 			AdditionalUsersDN:    "ou=users",
 			BaseDN:               "dc=example,dc=com",
 			MailAttribute:        "mail",
-			DisplayNameAttribute: "displayname",
+			DisplayNameAttribute: "displayName",
 		},
 		nil,
 		mockFactory)
@@ -439,7 +440,7 @@ func TestShouldNotCrashWhenGroupsAreNotRetrievedFromLDAP(t *testing.T) {
 			Password:             "password",
 			UsernameAttribute:    "uid",
 			MailAttribute:        "mail",
-			DisplayNameAttribute: "displayname",
+			DisplayNameAttribute: "displayName",
 			UsersFilter:          "uid={input}",
 			AdditionalUsersDN:    "ou=users",
 			BaseDN:               "dc=example,dc=com",
@@ -469,7 +470,7 @@ func TestShouldNotCrashWhenGroupsAreNotRetrievedFromLDAP(t *testing.T) {
 					DN: "uid=test,dc=example,dc=com",
 					Attributes: []*ldap.EntryAttribute{
 						{
-							Name:   "displayname",
+							Name:   "displayName",
 							Values: []string{"John Doe"},
 						},
 						{
@@ -570,7 +571,7 @@ func TestShouldReturnUsernameFromLDAP(t *testing.T) {
 			Password:             "password",
 			UsernameAttribute:    "uid",
 			MailAttribute:        "mail",
-			DisplayNameAttribute: "displayname",
+			DisplayNameAttribute: "displayName",
 			UsersFilter:          "uid={input}",
 			AdditionalUsersDN:    "ou=users",
 			BaseDN:               "dc=example,dc=com",
@@ -600,7 +601,7 @@ func TestShouldReturnUsernameFromLDAP(t *testing.T) {
 					DN: "uid=test,dc=example,dc=com",
 					Attributes: []*ldap.EntryAttribute{
 						{
-							Name:   "displayname",
+							Name:   "displayName",
 							Values: []string{"John Doe"},
 						},
 						{
@@ -641,7 +642,7 @@ func TestShouldUpdateUserPassword(t *testing.T) {
 			Password:             "password",
 			UsernameAttribute:    "uid",
 			MailAttribute:        "mail",
-			DisplayNameAttribute: "displayname",
+			DisplayNameAttribute: "displayName",
 			UsersFilter:          "uid={input}",
 			AdditionalUsersDN:    "ou=users",
 			BaseDN:               "dc=example,dc=com",
@@ -693,7 +694,7 @@ func TestShouldUpdateUserPassword(t *testing.T) {
 						DN: "uid=test,dc=example,dc=com",
 						Attributes: []*ldap.EntryAttribute{
 							{
-								Name:   "displayname",
+								Name:   "displayName",
 								Values: []string{"John Doe"},
 							},
 							{
@@ -736,7 +737,7 @@ func TestShouldCheckValidUserPassword(t *testing.T) {
 			Password:             "password",
 			UsernameAttribute:    "uid",
 			MailAttribute:        "mail",
-			DisplayNameAttribute: "displayname",
+			DisplayNameAttribute: "displayName",
 			UsersFilter:          "uid={input}",
 			AdditionalUsersDN:    "ou=users",
 			BaseDN:               "dc=example,dc=com",
@@ -759,7 +760,7 @@ func TestShouldCheckValidUserPassword(t *testing.T) {
 						DN: "uid=test,dc=example,dc=com",
 						Attributes: []*ldap.EntryAttribute{
 							{
-								Name:   "displayname",
+								Name:   "displayName",
 								Values: []string{"John Doe"},
 							},
 							{
@@ -804,7 +805,7 @@ func TestShouldCheckInvalidUserPassword(t *testing.T) {
 			Password:             "password",
 			UsernameAttribute:    "uid",
 			MailAttribute:        "mail",
-			DisplayNameAttribute: "displayname",
+			DisplayNameAttribute: "displayName",
 			UsersFilter:          "uid={input}",
 			AdditionalUsersDN:    "ou=users",
 			BaseDN:               "dc=example,dc=com",
@@ -827,7 +828,7 @@ func TestShouldCheckInvalidUserPassword(t *testing.T) {
 						DN: "uid=test,dc=example,dc=com",
 						Attributes: []*ldap.EntryAttribute{
 							{
-								Name:   "displayname",
+								Name:   "displayName",
 								Values: []string{"John Doe"},
 							},
 							{
@@ -872,7 +873,7 @@ func TestShouldCallStartTLSWhenEnabled(t *testing.T) {
 			Password:             "password",
 			UsernameAttribute:    "uid",
 			MailAttribute:        "mail",
-			DisplayNameAttribute: "displayname",
+			DisplayNameAttribute: "displayName",
 			UsersFilter:          "uid={input}",
 			AdditionalUsersDN:    "ou=users",
 			BaseDN:               "dc=example,dc=com",
@@ -906,7 +907,7 @@ func TestShouldCallStartTLSWhenEnabled(t *testing.T) {
 					DN: "uid=test,dc=example,dc=com",
 					Attributes: []*ldap.EntryAttribute{
 						{
-							Name:   "displayname",
+							Name:   "displayName",
 							Values: []string{"John Doe"},
 						},
 						{
@@ -946,7 +947,7 @@ func TestShouldParseDynamicConfiguration(t *testing.T) {
 			Password:             "password",
 			UsernameAttribute:    "uid",
 			MailAttribute:        "mail",
-			DisplayNameAttribute: "displayname",
+			DisplayNameAttribute: "displayName",
 			UsersFilter:          "(&(|({username_attribute}={input})({mail_attribute}={input})({display_name_attribute}={input}))(objectCategory=person)(objectClass=user)(!userAccountControl:1.2.840.113556.1.4.803:=2)(!pwdLastSet=0))",
 			GroupsFilter:         "(&(|(member={dn})(member={input})(member={username}))(objectClass=group))",
 			AdditionalUsersDN:    "ou=users",
@@ -957,7 +958,7 @@ func TestShouldParseDynamicConfiguration(t *testing.T) {
 		nil,
 		mockFactory)
 
-	assert.Equal(t, "(&(|(uid={input})(mail={input})(displayname={input}))(objectCategory=person)(objectClass=user)(!userAccountControl:1.2.840.113556.1.4.803:=2)(!pwdLastSet=0))", ldapClient.configuration.UsersFilter)
+	assert.Equal(t, "(&(|(uid={input})(mail={input})(displayName={input}))(objectCategory=person)(objectClass=user)(!userAccountControl:1.2.840.113556.1.4.803:=2)(!pwdLastSet=0))", ldapClient.configuration.UsersFilter)
 	assert.Equal(t, "(&(|(member={dn})(member={input})(member={username}))(objectClass=group))", ldapClient.configuration.GroupsFilter)
 	assert.Equal(t, "ou=users,dc=example,dc=com", ldapClient.usersBaseDN)
 	assert.Equal(t, "ou=groups,dc=example,dc=com", ldapClient.groupsBaseDN)
@@ -977,7 +978,7 @@ func TestShouldCallStartTLSWithInsecureSkipVerifyWhenSkipVerifyTrue(t *testing.T
 			Password:             "password",
 			UsernameAttribute:    "uid",
 			MailAttribute:        "mail",
-			DisplayNameAttribute: "displayname",
+			DisplayNameAttribute: "displayName",
 			UsersFilter:          "uid={input}",
 			AdditionalUsersDN:    "ou=users",
 			BaseDN:               "dc=example,dc=com",
@@ -1014,7 +1015,7 @@ func TestShouldCallStartTLSWithInsecureSkipVerifyWhenSkipVerifyTrue(t *testing.T
 					DN: "uid=test,dc=example,dc=com",
 					Attributes: []*ldap.EntryAttribute{
 						{
-							Name:   "displayname",
+							Name:   "displayName",
 							Values: []string{"John Doe"},
 						},
 						{
@@ -1055,7 +1056,7 @@ func TestShouldReturnLDAPSAlreadySecuredWhenStartTLSAttempted(t *testing.T) {
 			Password:             "password",
 			UsernameAttribute:    "uid",
 			MailAttribute:        "mail",
-			DisplayNameAttribute: "displayname",
+			DisplayNameAttribute: "displayName",
 			UsersFilter:          "uid={input}",
 			AdditionalUsersDN:    "ou=users",
 			BaseDN:               "dc=example,dc=com",
